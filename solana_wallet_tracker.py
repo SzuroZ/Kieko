@@ -97,6 +97,11 @@ async def reset_pnl_at_11_59pm():
 def balance():
     return jsonify(wallet_data)
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    app.logger.error(f"Exception on {request.path} [GET]", exc_info=e)
+    return "An error occurred", 500
+
 @app.route("/")
 def index():
     return render_template("index.html")

@@ -8,17 +8,17 @@ import threading
 from datetime import datetime, timedelta
 import pytz  # For time zone handling
 
-# Segédfüggvény az EXE fájlban való fájl elérési utak kezelésére
+# Helper function to handle file paths for EXE files
 def get_resource_path(relative_path):
-    """Adja vissza a fájl elérési útját, függetlenül attól, hogy EXE vagy fejlesztési környezetben fut-e."""
+    """Returns the file path, regardless of whether the app is running in an EXE or development environment."""
     try:
-        # Ha az alkalmazás EXE-ben fut, a PyInstaller elérési útját kell használni
+        # If the app is running in an EXE, use the PyInstaller path
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
-# A statikus fájlok elérési útja
+# Set the paths for static files and templates
 static_folder = get_resource_path("static")
 templates_folder = get_resource_path("templates")
 
@@ -26,11 +26,10 @@ app = Flask(__name__, static_folder=static_folder, template_folder=templates_fol
 
 WALLET_ADDRESS = "3RmzSs3B1Qd6Kf3LTN6r3W5TQhh7M6hBnntpEExMr17m"
 wallet_data = {"balance": 0, "pnl": 0}
-reference_balance = None  # Inicializálás dinamikusan
-
+reference_balance = None  # Initialize dynamically
 
 async def get_balance(wallet_address: str, retries=5) -> int:
-    """Lekéri a tárca egyenlegét, és ha hiba történik, újrapróbálja."""
+    """Fetches the wallet balance and retries if an error occurs."""
     wallet = Pubkey.from_string(wallet_address)
     
     for attempt in range(retries):
@@ -40,11 +39,10 @@ async def get_balance(wallet_address: str, retries=5) -> int:
                 return response.value
         except Exception as e:
             print(f"Balance fetch error (attempt {attempt+1}/{retries}): {e}")
-            await asyncio.sleep(2)  # Várunk 2 másodpercet újrapróbálkozás előtt
+            await asyncio.sleep(2)  # Wait for 2 seconds before retrying
 
     print("Final error: Unable to fetch balance after multiple attempts.")
-    return None  # Jelzés, hogy nem sikerült lekérni
-
+    return None  # Indicate that the balance could not be fetched
 
 async def track_balance():
     global wallet_data, reference_balance
@@ -66,12 +64,11 @@ async def track_balance():
             wallet_data["balance"] = "Error fetching balance"
             wallet_data["pnl"] = "Error fetching balance"
             await asyncio.sleep(3)
-            continue  # Újrapróbálkozás
+            continue  # Retry
 
         wallet_data["balance"] = current_balance / 1_000_000_000
         wallet_data["pnl"] = wallet_data["balance"] - reference_balance
         await asyncio.sleep(3)
-
 
 async def reset_pnl_at_11_59pm():
     global reference_balance, wallet_data
@@ -96,28 +93,22 @@ async def reset_pnl_at_11_59pm():
         else:
             print("Error during PNL reset: Failed to fetch balance")
 
-
 @app.route("/balance")
 def balance():
     return jsonify(wallet_data)
-
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
 def start_server():
     app.run(host="0.0.0.0", port=5000)
-
 
 def start_async_loop():
     asyncio.run(main())
 
-
 async def main():
     await asyncio.gather(track_balance(), reset_pnl_at_11_59pm())
-
 
 if __name__ == "__main__":
     threading.Thread(target=start_server, daemon=True).start()

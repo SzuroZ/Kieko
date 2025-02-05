@@ -18,15 +18,19 @@ if %errorlevel% neq 0 (
     echo Chocolatey is not installed. Installing Chocolatey...
     echo =====================================================
     
-    :: PowerShell segítségével telepítjük a Chocolatey-t, és közvetlenül a kimenetét is látjuk
     powershell -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
 
-    :: Ellenőrizzük, hogy sikerült-e a telepítés
+    :: Várunk, hogy befejeződjön a telepítés
+    timeout /t 10
+
+    :: Frissítjük a környezeti változókat, hogy elérhessük a choco-t
+    call C:\ProgramData\chocolatey\bin\refreshenv.cmd
+
+    :: Újra ellenőrizzük, hogy a Chocolatey telepítve van-e
     where choco >nul 2>&1
     if %errorlevel% neq 0 (
         echo =====================================================
         echo ERROR: Chocolatey installation failed.
-        echo Please check manually.
         echo =====================================================
         pause
         exit /b
@@ -40,15 +44,16 @@ if %errorlevel% neq 0 (
     echo Ngrok is not installed. Installing...
     echo ===================================
     
-    :: PowerShell segítségével telepítjük az Ngrok-ot, és közvetlenül látjuk a kimenetet
     powershell -Command "choco install ngrok -y"
     
-    :: Ellenőrizzük, hogy sikerült-e telepíteni az Ngrok-ot
+    :: Várunk, hogy befejeződjön az Ngrok telepítése
+    timeout /t 10
+
+    :: Ellenőrizzük, hogy az Ngrok telepítve van-e
     where ngrok >nul 2>&1
     if %errorlevel% neq 0 (
         echo =====================================================
         echo ERROR: Ngrok installation failed.
-        echo Please check your Chocolatey installation.
         echo =====================================================
         pause
         exit /b
@@ -60,7 +65,10 @@ call C:\ProgramData\chocolatey\bin\refreshenv.cmd
 
 echo =========================================================
 echo All required tools (Chocolatey, Ngrok) have been installed.
-echo You can now run the application script.
+echo Now launching the application in a new CMD window...
 echo =========================================================
-pause
+
+:: Új CMD ablakot indítunk, hogy friss környezeti változókkal futtassuk a programot
+start cmd /k "start /b ngrok http 5000 & start /b solana_wallet_tracker.exe"
+
 exit

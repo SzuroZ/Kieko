@@ -1,6 +1,7 @@
 import asyncio
 import sys
 import os
+import subprocess
 from flask import Flask, jsonify, render_template
 from solana.rpc.async_api import AsyncClient
 from solders.pubkey import Pubkey
@@ -18,13 +19,19 @@ def get_resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+# Indítsd el az Ngrokot egy külön folyamatban
+def start_ngrok():
+    ngrok_command = "ngrok http 5000"
+    subprocess.Popen(ngrok_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
 # Set the paths for static files and templates
 static_folder = get_resource_path("static")
 templates_folder = get_resource_path("templates")
 
 app = Flask(__name__, static_folder=static_folder, template_folder=templates_folder)
 
-WALLET_ADDRESS = "3RmzSs3B1Qd6Kf3LTN6r3W5TQhh7M6hBnntpEExMr17m"
+WALLET_ADDRESS = "8T7rZ1AtF8hSm2gTu2JYqPRGeujdp2P8YsCk7sADhPjV"
 wallet_data = {"balance": 0, "pnl": 0}
 reference_balance = None  # Initialize dynamically
 

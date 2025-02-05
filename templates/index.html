@@ -35,22 +35,22 @@
         }
 
         @keyframes glow {
-            0% { box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.4); }
-            25% { box-shadow: 3px 3px 15px 4px rgba(255, 255, 255, 0.6); }
-            50% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.8); }
-            75% { box-shadow: -3px -3px 15px 4px rgba(255, 255, 255, 0.6); }
-            100% { box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.4); }
+            0% { box-shadow: 0 0 8px 2px rgba(59, 0, 0, 0.4); }
+            25% { box-shadow: 3px 3px 15px 4px rgba(59, 0, 0, 0.6); }
+            50% { box-shadow: 0 0 20px 5px rgba(59, 0, 0, 0.8); }
+            75% { box-shadow: -3px -3px 15px 4px rgba(59, 0, 0, 0.6); }
+            100% { box-shadow: 0 0 8px 2px rgba(59, 0, 0, 0.4); }
         }
 
         .container::before {
             content: "";
             position: absolute;
-            top: -10px; /* Hátrébb tolás */
-            left: -20px;
+            top: 0px; /* Hátrébb tolás */
+            left: 0px;
             width: 100%;
             height: 150%; /* Nagyobb háttér, kisebb zoom */
             background: url('/static/pic1.jpg') no-repeat center top;
-            background-size: 75%; /* Zoom out effect */
+            background-size: 120%; /* Zoom out effect */
             opacity: 0.5;
             z-index: 0;
         }

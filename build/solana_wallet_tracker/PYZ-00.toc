@@ -1,4 +1,4 @@
-('C:\\Users\\Szuro\\web3_projects\\yassir\\build\\solana_wallet_tracker\\PYZ-00.pyz',
+('C:\\Users\\Szuro\\web3_projects\\Kieko\\build\\solana_wallet_tracker\\PYZ-00.pyz',
  [('__future__',
    'C:\\Program Files\\Python312\\Lib\\__future__.py',
    'PYMODULE'),
